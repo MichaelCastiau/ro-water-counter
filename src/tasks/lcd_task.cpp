@@ -1,10 +1,12 @@
 #include "lcd_task.h"
 
 extern EventGroupHandle_t modeGroup;
+extern QueueHandle_t litersCounterQueue;
 
 void StartLCDTask(void *args)
 {
     std::unique_ptr<LCDMode> mode = std::unique_ptr<LCDMode>(new LCDModeMenu());
+    volatile double litersCounter = 0.0;
     Serial.println("Starting LCD task...");
 
     // Reset the LCD first
@@ -19,18 +21,34 @@ void StartLCDTask(void *args)
     for (;;)
     {
         volatile EventBits_t mode = xEventGroupGetBits(modeGroup);
+        if (uxQueueMessagesWaiting(litersCounterQueue) > 0)
+        {
+            xQueueReceive(litersCounterQueue, (void *)&litersCounter, pdMS_TO_TICKS(100));
+        }
+
         if (mode & MODE_MENU)
         {
             lcd.clear();
             lcd.setCursor(0, 0);
             lcd.print("RO Water Counter");
             lcd.setCursor(1, 0);
-            lcd.print(0, DEC);
+            lcd.print(((uint8_t)litersCounter * 10) / 10, DEC);
+            lcd.print(".");
+            lcd.print(((uint8_t)litersCounter * 10) % 10, DEC);
             lcd.setCursor(1, 3);
             lcd.print("Liters");
         }
         else if (mode & MODE_RUNNING)
         {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("RO Water Counter");
+            lcd.setCursor(1, 0);
+            lcd.print(((uint8_t)litersCounter * 10) / 10, DEC);
+            lcd.print(".");
+            lcd.print(((uint8_t)litersCounter * 10) % 10, DEC);
+            lcd.setCursor(1, 3);
+            lcd.print("Liters");
         }
         else if (mode & MODE_PAUZED)
         {

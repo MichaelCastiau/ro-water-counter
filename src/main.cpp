@@ -5,10 +5,12 @@
 #include "tasks/re_task.h"
 #include "tasks/lcd_task.h"
 #include <freertos/event_groups.h>
+#include <freertos/queue.h>
 
 TaskHandle_t startRotaryEncoderTaskHandle;
 TaskHandle_t startLCDTaskHandle;
 EventGroupHandle_t modeGroup;
+QueueHandle_t litersCounterQueue;
 
 void GPIO_Init();
 
@@ -24,7 +26,9 @@ void setup()
   xEventGroupClearBits(modeGroup, 0xff);
   xEventGroupSetBits(modeGroup, MODE_MENU);
 
-  xTaskCreate(StartRotaryEncoderTask, "RE Task", configMINIMAL_STACK_SIZE + 128, NULL, 1, &startRotaryEncoderTaskHandle);
+  litersCounterQueue = xQueueCreate(10, sizeof(double));
+
+  xTaskCreate(StartRotaryEncoderTask, "RE Task", configMINIMAL_STACK_SIZE + 500, NULL, 1, &startRotaryEncoderTaskHandle);
   xTaskCreate(StartLCDTask, "LCD Task", configMINIMAL_STACK_SIZE + 500, NULL, 1, &startLCDTaskHandle);
 }
 
@@ -39,9 +43,6 @@ void GPIO_Init()
   pinMode(PIN_RELAY_OUT, OUTPUT);
   pinMode(PIN_LEVEL_IN, INPUT);
   pinMode(PIN_FLOW_IN, INPUT);
-  pinMode(SW_PRESS, INPUT);
-  pinMode(RE_A, INPUT);
-  pinMode(RE_B, INPUT);
 
   // PWM configuration
   ledcAttachPin(PIN_LCD_BACKLIGHT, 0); // Channel 0
