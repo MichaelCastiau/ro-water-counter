@@ -3,6 +3,7 @@
 
 #include <functional>
 #include "LCD_ST7032.h"
+#include "../config.h"
 
 class DeviceMode
 {
@@ -11,6 +12,8 @@ public:
     virtual void rotatedClockwise(void) = 0;
     virtual void rotatedCounterClockwise(void) = 0;
     virtual void pressed(void) = 0;
+
+    virtual void onPressed(std::function<void(double)> callback);
 };
 
 #endif

@@ -2,11 +2,12 @@
 // This include must be in the cpp file because the library is badly written
 #include <AsyncElegantOTA.h>
 
-const char *ssid = "Michael's Jungle 2.4";
-const char *password = "BotanicalInterior1898";
+const char* ssid = "Michael's Jungle 2.4";
+const char* password = "BotanicInterior1898";
 
 void StartWiFiTask(void *args)
 {
+    Serial.println("Starting WiFi task...");
     AsyncWebServer server(80);
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -17,8 +18,7 @@ void StartWiFiTask(void *args)
         Serial.print(".");
     }
     Serial.println("");
-    Serial.print("Connected to ");
-    Serial.println(ssid);
+    Serial.print("Connected to WiFi");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 

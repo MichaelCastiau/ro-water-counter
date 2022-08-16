@@ -17,10 +17,23 @@ void StartDefaultTask(void *args)
     lcd.setcontrast(60); // contrast value range is 0-63, try 25@5V or 50@3.3V as a starting value
 
     std::unique_ptr<DeviceMode> mode = std::unique_ptr<DeviceMode>(new DeviceModeMenu(&lcd));
+    mode->onPressed([&](double liters)
+                    { mode.reset(new DeviceModeRunning(&lcd, liters));
+                    mode->initialise(); });
     mode->initialise();
 
     for (;;)
     {
-        vTaskDelay(pdMS_TO_TICKS(50));
+        uint8_t rotation = encoder.rotate();
+        uint8_t singlePress = encoder.push();
+
+        if (singlePress)
+            mode->pressed();
+        else if (rotation & RE_ROTATE_CLOCKWISE)
+            mode->rotatedClockwise();
+        else if (rotation & RE_ROTATE_COUNTERCLOCKWISE)
+            mode->rotatedCounterClockwise();
+
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }

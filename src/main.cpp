@@ -47,6 +47,6 @@ void GPIO_Init()
   digitalWrite(PIN_RELAY_OUT, LOW);
 
   analogWrite(PIN_LCD_BACKLIGHT, 204); // 80% duty cycle for setting brightness
-  digitalWrite(LED_ERROR, HIGH);       // switch them off
+  digitalWrite(LED_ERROR, HIGH);       // switch off leds
   digitalWrite(LED_NORMAL, HIGH);
 }

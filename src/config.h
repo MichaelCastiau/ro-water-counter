@@ -15,5 +15,6 @@
 #define MODE_PAUZED                     (uint8_t)(1 << 3)
 
 // Rotary encoder
-#define RE_ROTATE_CLOCKWISE             (1 << 0)
-#define RE_ROTATE_COUNTERCLOCKWISE      (1 << 1)
+#define RE_STEPS                        (double) 0.5
+#define RE_ROTATE_CLOCKWISE             (1 << 1)
+#define RE_ROTATE_COUNTERCLOCKWISE      (1 << 0)
