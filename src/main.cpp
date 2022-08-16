@@ -1,16 +1,13 @@
 #include "config.h"
 #include <Arduino.h>
 #include <freertos/task.h>
-#include "tasks/leds_task.h"
-#include "tasks/re_task.h"
-#include "tasks/lcd_task.h"
+#include "tasks/wifi_task.h"
+#include "tasks/default_task.h"
 #include <freertos/event_groups.h>
 #include <freertos/queue.h>
 
-TaskHandle_t startRotaryEncoderTaskHandle;
-TaskHandle_t startLCDTaskHandle;
-EventGroupHandle_t modeGroup;
-QueueHandle_t litersCounterQueue;
+TaskHandle_t defaultTaskHandle;
+TaskHandle_t wifiTaskHandle;
 
 void GPIO_Init();
 
@@ -22,14 +19,8 @@ void setup()
   GPIO_Init();
   Serial.println("Pins initialised");
 
-  modeGroup = xEventGroupCreate();
-  xEventGroupClearBits(modeGroup, 0xff);
-  xEventGroupSetBits(modeGroup, MODE_MENU);
-
-  litersCounterQueue = xQueueCreate(10, sizeof(double));
-
-  xTaskCreate(StartRotaryEncoderTask, "RE Task", configMINIMAL_STACK_SIZE + 500, NULL, 1, &startRotaryEncoderTaskHandle);
-  xTaskCreate(StartLCDTask, "LCD Task", configMINIMAL_STACK_SIZE + 500, NULL, 1, &startLCDTaskHandle);
+  xTaskCreate(StartWiFiTask, "WiFi Task", configMINIMAL_STACK_SIZE + 7000, NULL, 2, &wifiTaskHandle);
+  xTaskCreate(StartDefaultTask, "WiFi Task", configMINIMAL_STACK_SIZE + 1024, NULL, 2, &defaultTaskHandle);
 }
 
 void loop()
@@ -56,6 +47,6 @@ void GPIO_Init()
   digitalWrite(PIN_RELAY_OUT, LOW);
 
   analogWrite(PIN_LCD_BACKLIGHT, 204); // 80% duty cycle for setting brightness
-  digitalWrite(LED_ERROR, HIGH);         // switch them off
+  digitalWrite(LED_ERROR, HIGH);       // switch them off
   digitalWrite(LED_NORMAL, HIGH);
 }
