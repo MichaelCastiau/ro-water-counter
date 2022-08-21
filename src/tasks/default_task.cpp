@@ -20,12 +20,13 @@ void StartDefaultTask(void *args)
 
     std::function<void(double)> goToRunning;
     std::function<void(void)> goToMenu;
+    std::function<void(double)> goToDone;
 
     std::unique_ptr<DeviceMode> mode = std::unique_ptr<DeviceMode>(new DeviceModeMenu(&lcd, &goToRunning));
 
     goToRunning = [&](double liters)
     {
-        mode.reset(new DeviceModeRunning(&lcd, liters, &goToMenu));
+        mode.reset(new DeviceModeRunning(&lcd, liters, &goToMenu, &goToDone));
         mode->initialise();
     };
 
@@ -35,12 +36,19 @@ void StartDefaultTask(void *args)
         mode->initialise();
     };
 
+    goToDone = [&](double litersFilled)
+    {
+        mode.reset(new DeviceModeDone(&lcd, litersFilled, &goToMenu));
+        mode->initialise();
+    };
+
     mode->initialise();
 
     for (;;)
     {
         uint8_t rotation = encoder.rotate();
         uint8_t singlePress = encoder.push();
+        uint8_t longPress = encoder.pushLong(3000);
 
         if (singlePress)
             mode->pressed();
@@ -48,6 +56,9 @@ void StartDefaultTask(void *args)
             mode->rotatedClockwise();
         else if (rotation & RE_ROTATE_COUNTERCLOCKWISE)
             mode->rotatedCounterClockwise();
+
+        if (longPress)
+            mode->pressedLong();
 
         if (uxQueueMessagesWaiting(litersCounterQueue) > 0)
         {

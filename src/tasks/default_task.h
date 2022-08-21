@@ -6,6 +6,7 @@
 #include <LCD_ST7032.h>
 #include "modes/device_mode_menu.h"
 #include "modes/device_mode_running.h"
+#include "modes/device_mode_done.h"
 #include <memory>
 #include <SimpleRotary.h>
 

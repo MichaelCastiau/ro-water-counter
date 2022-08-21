@@ -23,6 +23,7 @@ public:
     void rotatedCounterClockwise(void);
     virtual void setLiters(double liters);
     void pressed(void);
+    void pressedLong(void);
 };
 
 #endif

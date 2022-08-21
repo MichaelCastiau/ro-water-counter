@@ -1,10 +1,15 @@
 #include "device_mode_running.h"
 
-DeviceModeRunning::DeviceModeRunning(LCD_ST7032 *lcd, double litersTarget, std::function<void(void)>* onExit)
+DeviceModeRunning::DeviceModeRunning(
+    LCD_ST7032 *lcd,
+    double litersTarget,
+    std::function<void(void)> *onExit,
+    std::function<void(double)> *onDone)
 {
     this->lcd = lcd;
     this->litersTarget = litersTarget;
     this->onExitCallback = onExit;
+    this->onDoneCallback = onDone;
 }
 DeviceModeRunning::~DeviceModeRunning() {}
 void DeviceModeRunning::initialise()
@@ -33,9 +38,31 @@ void DeviceModeRunning::initialise()
 }
 void DeviceModeRunning::rotatedClockwise(void)
 {
+    if (litersTarget < 50)
+    {
+        litersTarget += RE_STEPS;
+        uint64_t number = ((uint64_t)litersTarget * 10) / 10;
+        uint64_t decimals = (litersTarget - (double)number) * 10;
+
+        lcd->setCursor(1, 5);
+        lcd->print(number, DEC);
+        lcd->print(".");
+        lcd->print(decimals, DEC);
+    }
 }
 void DeviceModeRunning::rotatedCounterClockwise(void)
 {
+    if (litersTarget > 0.2)
+    {
+        litersTarget -= RE_STEPS;
+        uint64_t number = ((uint64_t)litersTarget * 10) / 10;
+        uint64_t decimals = (litersTarget - (double)number) * 10;
+
+        lcd->setCursor(1, 5);
+        lcd->print(number, DEC);
+        lcd->print(".");
+        lcd->print(decimals, DEC);
+    }
 }
 void DeviceModeRunning::pressed(void)
 {
@@ -58,10 +85,22 @@ void DeviceModeRunning::pressed(void)
 }
 void DeviceModeRunning::setLiters(double liters)
 {
+    this->litersCount = liters;
+
     lcd->setCursor(1, 0);
     uint64_t number = ((uint64_t)liters * 10) / 10;
     uint64_t decimals = (liters - (double)number) * 10;
     lcd->print(number, DEC);
     lcd->print(".");
     lcd->print(decimals, DEC);
+
+    if (liters >= this->litersTarget)
+    {
+        // We're done :)
+        (*this->onDoneCallback)(this->litersCount);
+    }
+}
+void DeviceModeRunning::pressedLong()
+{
+    (*this->onExitCallback)();
 }

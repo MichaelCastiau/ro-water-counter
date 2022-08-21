@@ -12,6 +12,7 @@ public:
     virtual void rotatedClockwise(void) = 0;
     virtual void rotatedCounterClockwise(void) = 0;
     virtual void pressed(void) = 0;
+    virtual void pressedLong(void) = 0;
     virtual void setLiters(double liters) = 0;
 };
 

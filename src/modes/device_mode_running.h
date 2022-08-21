@@ -16,15 +16,17 @@ private:
     double litersCount = 0.0;
     uint8_t isPauzed = false;
     std::function<void(void)> *onExitCallback = nullptr;
+    std::function<void(double)> *onDoneCallback = nullptr;
 
 public:
-    DeviceModeRunning(LCD_ST7032 *lcd, double litersTarget, std::function<void(void)>* onExit);
+    DeviceModeRunning(LCD_ST7032 *lcd, double litersTarget, std::function<void(void)> *onExit, std::function<void(double)> *onDone);
     ~DeviceModeRunning();
 
     void initialise();
     void rotatedClockwise(void);
     void rotatedCounterClockwise(void);
     void pressed(void);
+    void pressedLong(void);
     void setLiters(double liters);
 };
 
