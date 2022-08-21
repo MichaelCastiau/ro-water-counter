@@ -7,6 +7,7 @@
 
 
 extern EventGroupHandle_t ledEventGroup;
+extern EventGroupHandle_t meterEventGroup;
 
 class DeviceModeMenu : public DeviceMode
 {

@@ -18,6 +18,7 @@ void DeviceModeMenu::initialise()
 
     xEventGroupClearBits(ledEventGroup, 0xff);
     xEventGroupSetBits(ledEventGroup, LED_STATE_IDLE);
+    xEventGroupSetBits(meterEventGroup, RESET_FLOW_METER);
 }
 void DeviceModeMenu::rotatedClockwise(void)
 {

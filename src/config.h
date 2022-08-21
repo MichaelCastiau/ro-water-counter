@@ -20,7 +20,7 @@
 #define RE_ROTATE_COUNTERCLOCKWISE      (1 << 0)
 
 // FLow meter
-#define FLOW_PERIOD_MS                   100
+#define FLOW_PERIOD_MS                   1000
 #define RESET_FLOW_METER                 (1 << 0)
 #define FLOW_METER_K_FACTOR              (double) 74.0
 

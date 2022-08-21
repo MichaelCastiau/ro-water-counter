@@ -33,7 +33,7 @@ void StartFlowTask(void *args)
             xEventGroupClearBits(meterEventGroup, RESET_FLOW_METER);
         }
 
-        uint64_t msPassed = FLOW_PERIOD_MS + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
+        uint64_t msPassed = FLOW_PERIOD_MS;// + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
 
         meter->tick(msPassed); // 10ms as defined in the task delay
         totalVolume = meter->getTotalVolume();
