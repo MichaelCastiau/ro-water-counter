@@ -12,8 +12,7 @@ public:
     virtual void rotatedClockwise(void) = 0;
     virtual void rotatedCounterClockwise(void) = 0;
     virtual void pressed(void) = 0;
-
-    virtual void onPressed(std::function<void(double)> callback);
+    virtual void setLiters(double liters) = 0;
 };
 
 #endif

@@ -18,3 +18,14 @@
 #define RE_STEPS                        (double) 0.5
 #define RE_ROTATE_CLOCKWISE             (1 << 1)
 #define RE_ROTATE_COUNTERCLOCKWISE      (1 << 0)
+
+// FLow meter
+#define FLOW_PERIOD_MS                   500
+#define RESET_FLOW_METER                 (1 << 0)
+#define FLOW_METER_K_FACTOR              (double) 74.0
+
+// LEDs events
+#define LED_STATE_NORMAL_RUNNIN          (1 << 0)
+#define LED_STATE_NORMAL_PAUZED          (1 << 1)
+#define LED_STATE_ERROR                  (1 << 2)
+#define LED_STATE_IDLE                   (1 << 3)

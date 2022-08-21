@@ -1,8 +1,9 @@
 #include "device_mode_menu.h"
 
-DeviceModeMenu::DeviceModeMenu(LCD_ST7032 *lcd)
+DeviceModeMenu::DeviceModeMenu(LCD_ST7032 *lcd, std::function<void(double)> *startCallback)
 {
     this->lcd = lcd;
+    this->startCallback = startCallback;
 }
 DeviceModeMenu::~DeviceModeMenu() {}
 void DeviceModeMenu::initialise()
@@ -14,6 +15,9 @@ void DeviceModeMenu::initialise()
     lcd->print("0.0");
     lcd->setCursor(1, 10); // Liters appears at the end of the screen
     lcd->print("Liters");
+
+    xEventGroupClearBits(ledEventGroup, 0xff);
+    xEventGroupSetBits(ledEventGroup, LED_STATE_IDLE);
 }
 void DeviceModeMenu::rotatedClockwise(void)
 {
@@ -45,10 +49,6 @@ void DeviceModeMenu::rotatedCounterClockwise(void)
 }
 void DeviceModeMenu::pressed(void)
 {
-    return (*this->onPressedCallback)(this->liters);
+    return (*this->startCallback)(this->liters);
 }
-
-void DeviceModeMenu::onPressed(std::function<void(double)> callback)
-{
-    this->onPressedCallback = &callback;
-}
+void DeviceModeMenu::setLiters(double liters) {}
