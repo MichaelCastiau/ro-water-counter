@@ -48,6 +48,8 @@ void DeviceModeRunning::rotatedClockwise(void)
         lcd->print(number, DEC);
         lcd->print(".");
         lcd->print(decimals, DEC);
+
+        this->setLiters(this->litersCount); //Recheck if we have met target
     }
 }
 void DeviceModeRunning::rotatedCounterClockwise(void)
@@ -62,6 +64,8 @@ void DeviceModeRunning::rotatedCounterClockwise(void)
         lcd->print(number, DEC);
         lcd->print(".");
         lcd->print(decimals, DEC);
+
+        this->setLiters(this->litersCount); //Recheck if we have met target
     }
 }
 void DeviceModeRunning::pressed(void)

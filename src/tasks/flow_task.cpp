@@ -9,7 +9,7 @@ std::unique_ptr<FlowMeter> meter;
 
 void StartFlowTask(void *args)
 {
-    FlowSensorProperties YFS402 = {5.0f, 73.0f, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+    FlowSensorProperties YFS402 = {5.0f, FLOW_METER_K_FACTOR, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
     meter.reset(new FlowMeter(digitalPinToInterrupt(PIN_FLOW_IN), YFS402, MeterISR, RISING));
 
     Serial.println("Starting flow meter task...");
@@ -25,6 +25,9 @@ void StartFlowTask(void *args)
     {
         xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
 
+        uint64_t msPassed = FLOW_PERIOD_MS; // + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
+        meter->tick(msPassed);              // 10ms as defined in the task delay
+
         const volatile EventBits_t meterEvent = xEventGroupGetBits(meterEventGroup);
         if (meterEvent & RESET_FLOW_METER)
         {
@@ -33,14 +36,12 @@ void StartFlowTask(void *args)
             xEventGroupClearBits(meterEventGroup, RESET_FLOW_METER);
         }
 
-        uint64_t msPassed = FLOW_PERIOD_MS;// + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
-
-        meter->tick(msPassed); // 10ms as defined in the task delay
         totalVolume = meter->getTotalVolume();
+
+        Serial.printf("Total volume: %f\n", totalVolume);
 
         if (totalVolume != previousTotalVolume)
         {
-
             // Send to the default task to display
             xQueueSend(litersCounterQueue, (void *)&totalVolume, pdMS_TO_TICKS(5));
         }
