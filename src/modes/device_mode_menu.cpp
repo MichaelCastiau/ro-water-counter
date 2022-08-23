@@ -38,7 +38,7 @@ void DeviceModeMenu::rotatedClockwise(void)
 }
 void DeviceModeMenu::rotatedCounterClockwise(void)
 {
-    if (liters > 0.2)
+    if (liters > 0.5)
     {
         liters -= RE_STEPS;
         uint64_t number = ((uint64_t)liters * 10) / 10;

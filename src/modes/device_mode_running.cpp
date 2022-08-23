@@ -38,7 +38,7 @@ void DeviceModeRunning::initialise()
 }
 void DeviceModeRunning::rotatedClockwise(void)
 {
-    if (litersTarget < 50)
+    if (litersTarget < 50 && isPauzed)
     {
         litersTarget += RE_STEPS;
         uint64_t number = ((uint64_t)litersTarget * 10) / 10;
@@ -54,7 +54,7 @@ void DeviceModeRunning::rotatedClockwise(void)
 }
 void DeviceModeRunning::rotatedCounterClockwise(void)
 {
-    if (litersTarget > 0.2)
+    if (litersTarget > 0.5 && isPauzed)
     {
         litersTarget -= RE_STEPS;
         uint64_t number = ((uint64_t)litersTarget * 10) / 10;
