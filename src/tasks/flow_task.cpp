@@ -38,10 +38,9 @@ void StartFlowTask(void *args)
 
         totalVolume = meter->getTotalVolume();
 
-        Serial.printf("Total volume: %f\n", totalVolume);
-
         if (totalVolume != previousTotalVolume)
         {
+            Serial.printf("Total volume: %f\n", totalVolume);
             // Send to the default task to display
             xQueueSend(litersCounterQueue, (void *)&totalVolume, pdMS_TO_TICKS(5));
         }
