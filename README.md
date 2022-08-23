@@ -31,7 +31,7 @@ python -m esptool  --port /dev/tty.usbmodem14301 --chip esp32 write_flash 0x8000
 
 ### Application
 
-The applicatino itself should be flashed at address 0x10000, corresponding to the address defined in the bootloader table.
+The application itself should be flashed at address 0x10000 (or 0x210000 if using OTA), corresponding to the address defined in the bootloader table.
 
 ```shell
 python -m esptool  --port /dev/tty.usbmodem14301 --chip esp32 write_flash 0x10000 .pio/build/default/firmware.bin
