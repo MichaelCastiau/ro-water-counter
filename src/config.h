@@ -29,3 +29,6 @@
 #define LED_STATE_NORMAL_PAUZED          (1 << 1)
 #define LED_STATE_ERROR                  (1 << 2)
 #define LED_STATE_IDLE                   (1 << 3)
+
+// WiFi
+#define WEBHOOKS_KEY                     (const char*)"bT83HL9K3aVx_YwVMMCmDC"

@@ -25,6 +25,7 @@ void DeviceModeDone::initialise()
     lcd->print("l");
 
     digitalWrite(PIN_RELAY_OUT, LOW);
+    xQueueSend(doneLitersQueue, (void *)&litersFilled, pdMS_TO_TICKS(50));
 }
 void DeviceModeDone::rotatedClockwise(void) {}
 void DeviceModeDone::rotatedCounterClockwise(void) {}
@@ -33,6 +34,6 @@ void DeviceModeDone::pressed(void)
 {
     (*this->onResetCallback)();
 }
-void DeviceModeDone::pressedLong(){
-
+void DeviceModeDone::pressedLong()
+{
 }

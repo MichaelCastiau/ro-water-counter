@@ -1,0 +1,68 @@
+<html lang="en">
+
+<head>
+    <title>RO Water Counter</title>
+    <style>
+        body {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0093E9;
+            background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 0 15px 1px #333;
+            border-radius: 15px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form>div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+        }
+
+        form input,
+        form button {
+            padding: 5px;
+            font-size: 13pt;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Reverse Osmosis Water Counter</h1>
+        <h2>Configure WiFi Connection</h2>
+        <form method="POST" action="/connect">
+            <div>
+                <label>SSID</label>
+                <input type="text" name="ssid" />
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" />
+            </div>
+            <div>
+                <button type="submit">Connect</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>

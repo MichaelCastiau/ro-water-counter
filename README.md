@@ -1,5 +1,10 @@
 # RO Water Counter
 
+This repository contains the source code for a Reverse Osmosis water counter device, based on an ESP32 module. The device allows for setting an amount of needed liters an will swich on/off the RO system automatically.
+
+It interfaces with a water flow sensor type YF-S401.
+
+
 ## Flashing
 
 ```shell
