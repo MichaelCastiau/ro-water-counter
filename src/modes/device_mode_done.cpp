@@ -37,3 +37,4 @@ void DeviceModeDone::pressed(void)
 void DeviceModeDone::pressedLong()
 {
 }
+void DeviceModeDone::tick(){}

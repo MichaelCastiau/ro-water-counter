@@ -25,6 +25,7 @@ public:
     void setLiters(double liters);
     void pressed(void);
     void pressedLong(void);
+    void tick();
 };
 
 #endif

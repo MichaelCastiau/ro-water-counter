@@ -32,3 +32,6 @@
 
 // WiFi
 #define WEBHOOKS_KEY                     (const char*)"bT83HL9K3aVx_YwVMMCmDC"
+
+// Water level
+#define WATER_TOPPED_OFF                 (1 << 0)
