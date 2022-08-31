@@ -26,6 +26,8 @@ void DeviceModeDone::initialise()
 
     digitalWrite(PIN_RELAY_OUT, LOW);
     xQueueSend(doneLitersQueue, (void *)&litersFilled, pdMS_TO_TICKS(50));
+
+    xEventGroupSetBits(meterEventGroup, RESET_FLOW_METER);
 }
 void DeviceModeDone::rotatedClockwise(void) {}
 void DeviceModeDone::rotatedCounterClockwise(void) {}

@@ -34,6 +34,7 @@ void StartFlowTask(void *args)
             Serial.println("Resetting flow meter");
             meter->reset();
             totalVolume, previousTotalVolume = 0;
+            xQueueReset(litersCounterQueue);
             xEventGroupClearBits(meterEventGroup, RESET_FLOW_METER);
         }
 

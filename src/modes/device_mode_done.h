@@ -6,6 +6,7 @@
 #include <freertos/event_groups.h>
 
 extern EventGroupHandle_t ledEventGroup;
+extern EventGroupHandle_t meterEventGroup;
 extern QueueHandle_t doneLitersQueue;
 
 class DeviceModeDone : public DeviceMode
