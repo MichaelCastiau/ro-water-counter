@@ -22,7 +22,7 @@
 // FLow meter
 #define FLOW_PERIOD_MS                   1000
 #define RESET_FLOW_METER                 (1 << 0)
-#define FLOW_METER_K_FACTOR              (double) 41.5
+#define FLOW_METER_K_FACTOR              (double) 49.0
 
 // LEDs events
 #define LED_STATE_NORMAL_RUNNIN          (1 << 0)

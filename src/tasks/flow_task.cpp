@@ -5,13 +5,10 @@ void MeterISR();
 extern EventGroupHandle_t meterEventGroup;
 extern QueueHandle_t litersCounterQueue;
 
-std::unique_ptr<FlowMeter> meter;
+long pulseCount = 0;
 
 void StartFlowTask(void *args)
 {
-    FlowSensorProperties YFS402 = {5.0f, FLOW_METER_K_FACTOR, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
-    meter.reset(new FlowMeter(digitalPinToInterrupt(PIN_FLOW_IN), YFS402, MeterISR, RISING));
-
     Serial.println("Starting flow meter task...");
     volatile uint32_t now, previousTime = 0;
     double totalVolume, previousTotalVolume = 0.0;
@@ -24,22 +21,27 @@ void StartFlowTask(void *args)
     for (;;)
     {
         xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
-
-        uint64_t msPassed = FLOW_PERIOD_MS + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
-        meter->tick(msPassed);              // 10ms as defined in the task delay
+        detachInterrupt(PIN_FLOW_IN);
 
         const volatile EventBits_t meterEvent = xEventGroupGetBits(meterEventGroup);
         if (meterEvent & RESET_FLOW_METER)
         {
             Serial.println("Resetting flow meter");
-            meter.reset(new FlowMeter(digitalPinToInterrupt(PIN_FLOW_IN), YFS402, MeterISR, RISING));
             totalVolume, previousTotalVolume = 0;
             xQueueReset(litersCounterQueue);
             xEventGroupClearBits(meterEventGroup, RESET_FLOW_METER);
+            pulseCount = 0;
         }
 
-        totalVolume = meter->getTotalVolume();
+        uint64_t msPassed = FLOW_PERIOD_MS + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
+        double flowRate = ((1000.0 / msPassed) * pulseCount) / FLOW_METER_K_FACTOR;
+        double currentVolume = (flowRate / 60);
 
+        totalVolume += currentVolume;
+
+        Serial.printf("ms passed %i\ncurrent volume: %f\ntotalVolume: %f\n", msPassed, currentVolume, totalVolume);
+
+        pulseCount = 0;
         if (totalVolume != previousTotalVolume)
         {
             Serial.printf("Total volume: %f\n", totalVolume);
@@ -47,10 +49,12 @@ void StartFlowTask(void *args)
             xQueueSend(litersCounterQueue, (void *)&totalVolume, pdMS_TO_TICKS(5));
         }
         previousTotalVolume = totalVolume;
+
+        attachInterrupt(PIN_FLOW_IN, MeterISR, FALLING);
     }
 }
 
 void MeterISR()
 {
-    meter->count();
+    ++pulseCount;
 }
