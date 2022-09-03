@@ -25,14 +25,14 @@ void StartFlowTask(void *args)
     {
         xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        uint64_t msPassed = FLOW_PERIOD_MS; // + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
+        uint64_t msPassed = FLOW_PERIOD_MS + (xWasDelayed ? pdTICKS_TO_MS(xTaskGetTickCount() - xLastWakeTime) : 0);
         meter->tick(msPassed);              // 10ms as defined in the task delay
 
         const volatile EventBits_t meterEvent = xEventGroupGetBits(meterEventGroup);
         if (meterEvent & RESET_FLOW_METER)
         {
             Serial.println("Resetting flow meter");
-            meter->reset();
+            meter.reset(new FlowMeter(digitalPinToInterrupt(PIN_FLOW_IN), YFS402, MeterISR, RISING));
             totalVolume, previousTotalVolume = 0;
             xQueueReset(litersCounterQueue);
             xEventGroupClearBits(meterEventGroup, RESET_FLOW_METER);
@@ -52,8 +52,5 @@ void StartFlowTask(void *args)
 
 void MeterISR()
 {
-    if (meter && meter.get())
-    {
-        meter->count();
-    }
+    meter->count();
 }

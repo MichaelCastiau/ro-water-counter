@@ -23,7 +23,7 @@ void StartDefaultTask(void *args)
     std::function<void(double)> goToDone;
     std::function<void(void)> startATO;
 
-    std::unique_ptr<DeviceMode> mode = std::unique_ptr<DeviceMode>(new DeviceModeOperationMode(&lcd, &goToMenu, &startATO));
+    std::unique_ptr<DeviceMode> mode = std::unique_ptr<DeviceMode>(new DeviceModeMenu(&lcd, &goToRunning));
 
     goToRunning = [&](double liters)
     {
@@ -43,7 +43,8 @@ void StartDefaultTask(void *args)
         mode->initialise();
     };
 
-    startATO = [&] {
+    startATO = [&]
+    {
         mode.reset(new DeviceModeATO(&lcd));
         mode->initialise();
     };
