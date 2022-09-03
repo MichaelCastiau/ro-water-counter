@@ -7,6 +7,8 @@
 #include "modes/device_mode_menu.h"
 #include "modes/device_mode_running.h"
 #include "modes/device_mode_done.h"
+#include "modes/device_mode_om.h"
+#include "modes/device_mode_ato.h"
 #include <memory>
 #include <SimpleRotary.h>
 

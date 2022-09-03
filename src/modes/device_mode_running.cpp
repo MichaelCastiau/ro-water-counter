@@ -108,3 +108,6 @@ void DeviceModeRunning::pressedLong()
 {
     (*this->onExitCallback)();
 }
+void DeviceModeRunning::tick(){
+    
+}
