@@ -8,6 +8,7 @@
 #include <jled.h>
 
 extern EventGroupHandle_t ledEventGroup;
+extern EventGroupHandle_t wiFiEventGroup;
 
 void StartLEDTask(void *args);
 

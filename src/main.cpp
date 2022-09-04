@@ -18,6 +18,7 @@ TaskHandle_t levelTaskHandle;
 EventGroupHandle_t meterEventGroup;
 EventGroupHandle_t ledEventGroup;
 EventGroupHandle_t levelEventGroup;
+EventGroupHandle_t wiFiEventGroup;
 
 QueueHandle_t litersCounterQueue;
 QueueHandle_t doneLitersQueue;
@@ -35,6 +36,7 @@ void setup()
   meterEventGroup = xEventGroupCreate();
   ledEventGroup = xEventGroupCreate();
   levelEventGroup = xEventGroupCreate();
+  wiFiEventGroup = xEventGroupCreate();
 
   litersCounterQueue = xQueueCreate(10, sizeof(double));
   doneLitersQueue = xQueueCreate(10, sizeof(double));
@@ -65,5 +67,5 @@ void GPIO_Init()
   digitalWrite(PIN_RESET_LCD, LOW);
   digitalWrite(PIN_RELAY_OUT, LOW);
 
-  analogWrite(PIN_LCD_BACKLIGHT, 204); // 80% duty cycle for setting brightness
+  analogWrite(PIN_LCD_BACKLIGHT, BACKLIGHT_MAX); // 80% duty cycle for setting brightness
 }

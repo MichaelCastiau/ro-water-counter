@@ -12,6 +12,7 @@ const char *password = "BotanicInterior1898";
 const static String SERVER_PATH = "https://maker.ifttt.com/trigger/ro_water_filled/json/with/key/" + String(WEBHOOKS_KEY);
 
 extern QueueHandle_t doneLitersQueue;
+extern EventGroupHandle_t wiFiEventGroup;
 
 int sendWebhooksRequest(double litersFilled);
 
@@ -34,17 +35,20 @@ void StartWiFiTask(void *args)
     dns.start(53, "*", apIP);
 
     WiFi.begin(ssid, password);
-   
+
     // Wait for connection
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
         Serial.print(".");
     }
+
     Serial.println("");
     Serial.print("Connected to WiFi");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+
+    xEventGroupSetBits(wiFiEventGroup, WIFI_CONNECTED);
 
     IPAddress IP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
