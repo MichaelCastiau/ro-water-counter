@@ -6,10 +6,17 @@ void StartLEDTask(void *args)
     JLed ledGreen(LED_NORMAL);
     JLed ledRed(LED_ERROR);
     JLed ledWiFi(LED_WIFI);
+    JLed backlight(PIN_LCD_BACKLIGHT);
 
     ledGreen.Off().Update();
     ledRed.Off().Update();
     ledWiFi.Off().Update();
+
+    JLed backlightSeq[] = {
+        backlight.On(),
+        backlight.DelayBefore(BACKLIGHT_IDLE_MS).FadeOff(1000)};
+
+    JLedSequence seq(JLedSequence::eMode::SEQUENCE, backlightSeq);
 
     for (;;)
     {
@@ -48,15 +55,23 @@ void StartLEDTask(void *args)
         }
         }
 
+         if (ledEvent & EN_BACKLIGHT)
+         {
+             seq.Reset();
+             xEventGroupClearBits(ledEventGroup, EN_BACKLIGHT);
+         }
+
         if (xEventGroupGetBits(wiFiEventGroup) & WIFI_CONNECTED)
         {
-            ledWiFi.FadeOn(1000);
+            ledWiFi.FadeOn(500);
             xEventGroupClearBits(wiFiEventGroup, WIFI_CONNECTED);
         }
 
         ledGreen.Update();
         ledRed.Update();
         ledWiFi.Update();
+        backlight.Update();
+        seq.Update();
 
         vTaskDelay(pdMS_TO_TICKS(20));
     }
