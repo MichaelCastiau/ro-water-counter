@@ -2,7 +2,7 @@
 
 This repository contains the source code and hardware schematics for a Reverse Osmosis water counter device, based on an ESP32 module. The device allows for setting an amount of needed liters of water an will swich on/off the RO system automatically. When the amount of liters needed has been reached, the ESP32 module is programmed to interact with a webhook to send a notification to your smartphone.
 
-It interfaces with a water flow sensor type YF-S401. The sensor has a K-factor of 56. (Wrongly stated as 73 on the datasheet).
+It interfaces with a high-precision water flow sensor type YF-S401. The sensor has a K-factor of 98. (In the code the K-factor is halved since we only have an interrupt on one edge).
 
 ## Flashing
 
@@ -31,7 +31,7 @@ python -m esptool  --port /dev/tty.usbmodem14301 --chip esp32 write_flash 0x8000
 
 ### Application
 
-The applicatino itself should be flashed at address 0x10000, corresponding to the address defined in the bootloader table.
+The application itself should be flashed at address 0x10000 (or 0x210000 if using OTA), corresponding to the address defined in the bootloader table.
 
 ```shell
 python -m esptool  --port /dev/tty.usbmodem14301 --chip esp32 write_flash 0x10000 .pio/build/default/firmware.bin

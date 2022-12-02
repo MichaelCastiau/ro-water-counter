@@ -55,6 +55,7 @@ void DeviceModeMenu::pressed(void)
     return (*this->startCallback)(this->liters);
 }
 void DeviceModeMenu::setLiters(double liters) {}
+void DeviceModeMenu::tick() {}
 void DeviceModeMenu::pressedLong()
 {
 }

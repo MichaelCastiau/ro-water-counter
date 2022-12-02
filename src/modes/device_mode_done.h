@@ -6,6 +6,7 @@
 #include <freertos/event_groups.h>
 
 extern EventGroupHandle_t ledEventGroup;
+extern EventGroupHandle_t meterEventGroup;
 extern QueueHandle_t doneLitersQueue;
 
 class DeviceModeDone : public DeviceMode
@@ -25,6 +26,7 @@ public:
     void setLiters(double liters);
     void pressed(void);
     void pressedLong(void);
+    void tick();
 };
 
 #endif
