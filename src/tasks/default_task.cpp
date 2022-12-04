@@ -67,6 +67,9 @@ void StartDefaultTask(void *args)
         if (longPress)
             mode->pressedLong();
 
+        if (singlePress || longPress || (rotation & RE_ROTATE_CLOCKWISE) || (rotation & RE_ROTATE_COUNTERCLOCKWISE))
+            xEventGroupSetBits(ledEventGroup, EN_BACKLIGHT);
+
         if (uxQueueMessagesWaiting(litersCounterQueue) > 0)
         {
             double litersCounter = 0.0;

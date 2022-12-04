@@ -5,14 +5,18 @@ void StartLEDTask(void *args)
     Serial.println("Start LED Task...");
     JLed ledGreen(LED_NORMAL);
     JLed ledRed(LED_ERROR);
+    JLed ledWiFi(LED_WIFI);
+    JLed backlight(PIN_LCD_BACKLIGHT);
 
-    pinMode(LED_NORMAL, OUTPUT);
-    pinMode(LED_ERROR, OUTPUT);
-    digitalWrite(LED_NORMAL, HIGH);
-    digitalWrite(LED_ERROR, HIGH);
+    ledGreen.Off().Update();
+    ledRed.Off().Update();
+    ledWiFi.Off().Update();
 
-    /*    ledGreen.Off(1).Update();
-    ledRed.Off(1).Update();*/
+    JLed backlightSeq[] = {
+        backlight.On(),
+        backlight.DelayBefore(BACKLIGHT_IDLE_MS).FadeOff(1000)};
+
+    JLedSequence seq(JLedSequence::eMode::SEQUENCE, backlightSeq);
 
     for (;;)
     {
@@ -22,45 +26,52 @@ void StartLEDTask(void *args)
         {
         case LED_STATE_IDLE:
         {
-            digitalWrite(LED_NORMAL, HIGH);
-            digitalWrite(LED_ERROR, HIGH);
 
-            /* ledGreen.Reset().FadeOn(1000);
-             ledRed.Reset().Off();*/
+            ledGreen.Reset().On();
+            ledRed.Reset().Off();
             xEventGroupClearBits(ledEventGroup, 0xff);
             break;
         }
         case LED_STATE_NORMAL_RUNNIN:
         {
-            digitalWrite(LED_NORMAL, LOW);
-            /*  ledGreen.Reset().Breathe(1000).Forever();
-              ledRed.Reset().Off();*/
+            ledGreen.Reset().Breathe(2500).Forever();
+            ledRed.Reset().Off();
             xEventGroupClearBits(ledEventGroup, 0xff);
             break;
         }
         case LED_STATE_NORMAL_PAUZED:
         {
-            digitalWrite(LED_NORMAL, HIGH);
-
-            /* ledGreen.Reset().Blink(500, 500).Forever();
-             ledRed.Reset().Off();*/
+            ledGreen.Reset().Blink(500, 500).Forever();
+            ledRed.Reset().Off();
             xEventGroupClearBits(ledEventGroup, 0xff);
             break;
         }
         case LED_STATE_ERROR:
         {
-            digitalWrite(LED_NORMAL, HIGH);
-            digitalWrite(LED_ERROR, LOW);
-
-            /*ledGreen.Reset().Off();
-            ledRed.Reset().Blink(250, 250).Forever();*/
+            ledGreen.Reset().Off();
+            ledRed.Reset().Blink(250, 250).Forever();
             xEventGroupClearBits(ledEventGroup, 0xff);
             break;
         }
         }
 
-        //  ledGreen.Update();
-        //  ledRed.Update();
+         if (ledEvent & EN_BACKLIGHT)
+         {
+             seq.Reset();
+             xEventGroupClearBits(ledEventGroup, EN_BACKLIGHT);
+         }
+
+        if (xEventGroupGetBits(wiFiEventGroup) & WIFI_CONNECTED)
+        {
+            ledWiFi.FadeOn(500);
+            xEventGroupClearBits(wiFiEventGroup, WIFI_CONNECTED);
+        }
+
+        ledGreen.Update();
+        ledRed.Update();
+        ledWiFi.Update();
+        backlight.Update();
+        seq.Update();
 
         vTaskDelay(pdMS_TO_TICKS(20));
     }

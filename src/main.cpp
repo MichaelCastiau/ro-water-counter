@@ -18,6 +18,7 @@ TaskHandle_t levelTaskHandle;
 EventGroupHandle_t meterEventGroup;
 EventGroupHandle_t ledEventGroup;
 EventGroupHandle_t levelEventGroup;
+EventGroupHandle_t wiFiEventGroup;
 
 QueueHandle_t litersCounterQueue;
 QueueHandle_t doneLitersQueue;
@@ -35,6 +36,7 @@ void setup()
   meterEventGroup = xEventGroupCreate();
   ledEventGroup = xEventGroupCreate();
   levelEventGroup = xEventGroupCreate();
+  wiFiEventGroup = xEventGroupCreate();
 
   litersCounterQueue = xQueueCreate(10, sizeof(double));
   doneLitersQueue = xQueueCreate(10, sizeof(double));
@@ -57,13 +59,7 @@ void GPIO_Init()
   pinMode(PIN_RELAY_OUT, OUTPUT);
   pinMode(PIN_LEVEL_IN, INPUT);
 
-  // PWM configuration
-  ledcAttachPin(PIN_LCD_BACKLIGHT, 0); // Channel 0
-  ledcSetup(0, 1000, 8);               // 1kHz frequency, 8 bit timer resolution
-
   // Set the default states of all pins
   digitalWrite(PIN_RESET_LCD, LOW);
   digitalWrite(PIN_RELAY_OUT, LOW);
-
-  analogWrite(PIN_LCD_BACKLIGHT, 204); // 80% duty cycle for setting brightness
 }
