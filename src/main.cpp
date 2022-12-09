@@ -8,6 +8,7 @@
 #include "tasks/level_task.h"
 #include <freertos/event_groups.h>
 #include <freertos/queue.h>
+#include "models/WSMessage.h"
 
 TaskHandle_t defaultTaskHandle;
 TaskHandle_t wifiTaskHandle;
@@ -21,6 +22,7 @@ EventGroupHandle_t levelEventGroup;
 EventGroupHandle_t wiFiEventGroup;
 
 QueueHandle_t litersCounterQueue;
+QueueHandle_t toWSQueue;
 QueueHandle_t doneLitersQueue;
 
 void GPIO_Init();
@@ -40,6 +42,7 @@ void setup()
 
   litersCounterQueue = xQueueCreate(10, sizeof(double));
   doneLitersQueue = xQueueCreate(10, sizeof(double));
+  toWSQueue = xQueueCreate(10, sizeof(WSMessage));
 
   xTaskCreate(StartWiFiTask, "WiFi Task", configMINIMAL_STACK_SIZE + 7000, NULL, 2, &wifiTaskHandle);
   xTaskCreate(StartFlowTask, "Flow Task", configMINIMAL_STACK_SIZE + 3000, NULL, 1, &flowTaskHandle);

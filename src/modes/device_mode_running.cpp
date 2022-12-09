@@ -19,6 +19,9 @@ void DeviceModeRunning::initialise()
     lcd->print("System running");
     lcd->setCursor(1, 0);
 
+    WSMessage message = {.is_running = 1};
+    xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(50));
+
     uint64_t numberLitersTarget = ((uint64_t)litersTarget * 10) / 10;
     uint64_t decimalsLitersTarget = (litersTarget - (double)numberLitersTarget) * 10;
 
@@ -49,7 +52,7 @@ void DeviceModeRunning::rotatedClockwise(void)
         lcd->print(".");
         lcd->print(decimals, DEC);
 
-        this->setLiters(this->litersCount); //Recheck if we have met target
+        this->setLiters(this->litersCount); // Recheck if we have met target
     }
 }
 void DeviceModeRunning::rotatedCounterClockwise(void)
@@ -65,7 +68,7 @@ void DeviceModeRunning::rotatedCounterClockwise(void)
         lcd->print(".");
         lcd->print(decimals, DEC);
 
-        this->setLiters(this->litersCount); //Recheck if we have met target
+        this->setLiters(this->litersCount); // Recheck if we have met target
     }
 }
 void DeviceModeRunning::pressed(void)
@@ -108,6 +111,6 @@ void DeviceModeRunning::pressedLong()
 {
     (*this->onExitCallback)();
 }
-void DeviceModeRunning::tick(){
-    
+void DeviceModeRunning::tick()
+{
 }

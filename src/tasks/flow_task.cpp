@@ -4,6 +4,7 @@ void MeterISR();
 
 extern EventGroupHandle_t meterEventGroup;
 extern QueueHandle_t litersCounterQueue;
+extern QueueHandle_t toWSQueue;
 
 long pulseCount = 0;
 
@@ -39,6 +40,9 @@ void StartFlowTask(void *args)
 
         totalVolume += currentVolume;
 
+        WSMessage message = {.flowRate = flowRate, .litersFilled = totalVolume, .count = pulseCount};
+        xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(100));
+
         Serial.printf("ms passed %i\ncurrent volume: %f\ntotalVolume: %f\n", msPassed, currentVolume, totalVolume);
 
         pulseCount = 0;
@@ -50,7 +54,7 @@ void StartFlowTask(void *args)
         }
         previousTotalVolume = totalVolume;
 
-        attachInterrupt(PIN_FLOW_IN, MeterISR, FALLING);
+        attachInterrupt(PIN_FLOW_IN, MeterISR, CHANGE);
     }
 }
 

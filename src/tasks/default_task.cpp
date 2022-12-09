@@ -1,6 +1,7 @@
 #include "default_task.h"
 
 extern QueueHandle_t litersCounterQueue;
+extern QueueHandle_t toWSQueue;
 
 void StartDefaultTask(void *args)
 {
@@ -27,6 +28,8 @@ void StartDefaultTask(void *args)
 
     goToRunning = [&](double liters)
     {
+        WSMessage message = {.targetLiters = liters};
+        xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(50));
         mode.reset(new DeviceModeRunning(&lcd, liters, &goToMenu, &goToDone));
         mode->initialise();
     };
