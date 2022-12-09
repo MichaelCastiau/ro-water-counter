@@ -9,6 +9,7 @@
 #include "modes/device_mode_done.h"
 #include "modes/device_mode_om.h"
 #include "modes/device_mode_ato.h"
+#include "models/WSMessage.h"
 #include <memory>
 #include <SimpleRotary.h>
 

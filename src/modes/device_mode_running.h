@@ -4,9 +4,11 @@
 #include "device_mode.h"
 #include <Arduino.h>
 #include <freertos/event_groups.h>
+#include "../models/WSMessage.h"
 
 extern EventGroupHandle_t meterEventGroup;
 extern EventGroupHandle_t ledEventGroup;
+extern QueueHandle_t toWSQueue;
 
 class DeviceModeRunning : public DeviceMode
 {
