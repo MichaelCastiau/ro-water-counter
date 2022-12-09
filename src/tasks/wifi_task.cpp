@@ -100,12 +100,11 @@ void StartWiFiTask(void *args)
             message.litersFilled = newMessage.litersFilled;
             message.count = newMessage.count;
 
-             char buffer[100];
-        sprintf(buffer, "{\"flowRate\":%f,\"litersFilled\":%f, \"count\": %i, \"targetLiters\":%f, \"isRunning\":%i}", message.flowRate, message.litersFilled, message.count, message.targetLiters);
-        ws.textAll(buffer);
+            char buffer[100];
+            sprintf(buffer, "{\"flowRate\":%f,\"litersFilled\":%f, \"count\": %i, \"targetLiters\":%f, \"isRunning\":%i}", message.flowRate, message.litersFilled, message.count, message.targetLiters);
+            ws.textAll(buffer);
         }
 
-       
         ws.cleanupClients();
         dns.processNextRequest();
 
