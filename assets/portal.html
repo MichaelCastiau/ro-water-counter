@@ -25,9 +25,9 @@
                     </p>
                 </div>
                 <div class="flex flex-col justify-start">
-                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white">
+                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white flex justify-between items-end">
                         <span id="flow-rate-label">0.0</span> <span
-                            class="text-lg text-gray-400 relative top-2">l/min</span>
+                            class="text-lg text-gray-400">l/min</span>
                     </p>
                 </div>
             </div>
@@ -46,10 +46,9 @@
                     </p>
                 </div>
                 <div class="flex flex-col justify-start">
-                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white">
-                        <span id="volume-label">0.0</span> l <span class="text-lg text-gray-400 relative top-2"
-                            id="target-liters">/ 30
-                            l</span>
+                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white  flex justify-between items-end">
+                        <span id="volume-label">0.0l</span> <span class="text-lg text-gray-400"
+                            id="target-liters">/30l</span>
                     </p>
                     <div class="relative h-2 bg-gray-200 rounded w-full">
                         <div class="absolute top-0 left-0 h-2 bg-green-500 rounded" id="volume-bar">
@@ -59,8 +58,8 @@
             </div>
         </div>
         <div class="text-white mt-4 pl-4 flex items-center invisible" id="error">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="mr-2 h-4 w-4"
-                stroke="currentColor" class="w-6 h-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                class="mr-2 h-4 w-4" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
@@ -76,31 +75,38 @@
     </div>
     <script>
         let percent = 50;
-        var ws = new WebSocket('ws://ro-water-counter/ws');
-        ws.addEventListener('error', () => document.getElementById('error').classList.remove('invisible'));
-        ws.addEventListener('message', message => {
-            const data = JSON.parse(message.data);
-            if (data.litersFilled) {
-                percent = (data.litersFilled / data.targetLiters) * 100;
-                percent = percent > 100 ? 100 : percent;
-            }
+        try {
+            var ws = new WebSocket(`ws://${window.location.hostname}/ws`,);
+            ws.addEventListener('error', () => document.getElementById('error').classList.remove('invisible'));
+            ws.addEventListener('close', () => document.getElementById('error').classList.remove('invisible'));
+            ws.addEventListener('open', () => console.log('Connection opened'));
+            ws.addEventListener('message', message => {
+                const data = JSON.parse(message.data);
+                if (data.litersFilled) {
+                    percent = (data.litersFilled / data.targetLiters) * 100;
+                    percent = percent > 100 ? 100 : percent;
+                }
 
-            document.getElementById("flow-rate-label").innerHTML = Number(data.flowRate).toFixed(1);
-            document.getElementById("volume-label").innerHTML = Number(data.litersFilled).toFixed(2);
-            document.getElementById("volume-bar").style.width = `${Number(percent).toFixed()}%`;
-            if (data.targetLiters > 0) {
-                document.getElementById("target-liters").innerHTML = `/${Number(data.targetLiters).toFixed(1)}l`;
-            }
-            document.getElementById("pulse-count").innerHTML = data.count;
+                document.getElementById("flow-rate-label").innerHTML = Number(data.flowRate).toFixed(1);
+                document.getElementById("volume-label").innerHTML = `${Number(data.litersFilled).toFixed(2)}l`;
+                document.getElementById("volume-bar").style.width = `${Number(percent).toFixed()}%`;
+                if (data.targetLiters > 0) {
+                    document.getElementById("target-liters").innerHTML = `/${Number(data.targetLiters).toFixed(1)}l`;
+                }
+                document.getElementById("pulse-count").innerHTML = data.count;
 
-            const c = document.getElementById("bullet-flow-rate").classList;
-            if (data.isRunning) {
-                c.add('animate-pulse');
-            } else {
-                c.remove('animate-pulse');
-            }
-            document.getElementById("bullet-flow-rate").classList = c;
-        });
+                const c = document.getElementById("bullet-flow-rate").classList;
+                if (data.isRunning) {
+                    c.add('animate-pulse');
+                } else {
+                    c.remove('animate-pulse');
+                }
+                document.getElementById("bullet-flow-rate").classList = c;
+            });
+        } catch (error) {
+            console.error(error);
+            document.getElementById('error').classList.remove('invisible')
+        }
     </script>
 </body>
 

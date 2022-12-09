@@ -100,14 +100,12 @@ void StartWiFiTask(void *args)
             message.litersFilled = newMessage.litersFilled;
             message.count = newMessage.count;
 
-            char buffer[100];
+            char buffer[150];
             sprintf(buffer, "{\"flowRate\":%f,\"litersFilled\":%f, \"count\": %i, \"targetLiters\":%f, \"isRunning\":%i}", message.flowRate, message.litersFilled, message.count, message.targetLiters);
             ws.textAll(buffer);
         }
 
-        ws.cleanupClients();
         dns.processNextRequest();
-
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
