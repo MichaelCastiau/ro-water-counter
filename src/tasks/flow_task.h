@@ -6,7 +6,6 @@
 #include <freertos/task.h>
 #include <freertos/event_groups.h>
 #include <memory>
-#include <FlowMeter.h>
 #include "../models/WSMessage.h"
 
 void StartFlowTask(void* args);
