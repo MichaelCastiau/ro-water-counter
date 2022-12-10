@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <freertos/event_groups.h>
 #include "../models/WSMessage.h"
+#include <sys/time.h>
 
 extern EventGroupHandle_t meterEventGroup;
 extern EventGroupHandle_t ledEventGroup;

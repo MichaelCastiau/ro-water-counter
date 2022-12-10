@@ -3,6 +3,7 @@
 <head>
     <title>RO Water Counter</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
@@ -25,9 +26,9 @@
                     </p>
                 </div>
                 <div class="flex flex-col justify-start">
-                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white flex justify-between items-end">
-                        <span id="flow-rate-label">0.0</span> <span
-                            class="text-lg text-gray-400">l/min</span>
+                    <p
+                        class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white flex justify-between items-end">
+                        <span id="flow-rate-label">0.0</span> <span class="text-lg text-gray-400">l/min</span>
                     </p>
                 </div>
             </div>
@@ -46,13 +47,17 @@
                     </p>
                 </div>
                 <div class="flex flex-col justify-start">
-                    <p class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white  flex justify-between items-end">
+                    <p
+                        class="my-4 text-4xl font-bold text-left text-gray-800 dark:text-white  flex justify-between items-end">
                         <span id="volume-label">0.0l</span> <span class="text-lg text-gray-400"
-                            id="target-liters">/30l</span>
+                            id="target-liters"></span>
                     </p>
                     <div class="relative h-2 bg-gray-200 rounded w-full">
                         <div class="absolute top-0 left-0 h-2 bg-green-500 rounded" id="volume-bar">
                         </div>
+                    </div>
+                    <div class="mt-1 text-gray-500">
+                        Time remaining est.: <span id="time-remaining">unknown</span>
                     </div>
                 </div>
             </div>
@@ -74,9 +79,10 @@
         </div>
     </div>
     <script>
-        let percent = 50;
+        let percent = 0;
+        let start;
         try {
-            var ws = new WebSocket(`ws://${window.location.hostname}/ws`,);
+            var ws = new WebSocket(`ws://ro-water-counter/ws`,);
             ws.addEventListener('error', () => document.getElementById('error').classList.remove('invisible'));
             ws.addEventListener('close', () => document.getElementById('error').classList.remove('invisible'));
             ws.addEventListener('open', () => console.log('Connection opened'));
@@ -86,7 +92,9 @@
                     percent = (data.litersFilled / data.targetLiters) * 100;
                     percent = percent > 100 ? 100 : percent;
                 }
-
+                if (data.startTime) {
+                    start = moment.unix(data.startTime);
+                }
                 document.getElementById("flow-rate-label").innerHTML = Number(data.flowRate).toFixed(1);
                 document.getElementById("volume-label").innerHTML = `${Number(data.litersFilled).toFixed(2)}l`;
                 document.getElementById("volume-bar").style.width = `${Number(percent).toFixed()}%`;
@@ -96,12 +104,32 @@
                 document.getElementById("pulse-count").innerHTML = data.count;
 
                 const c = document.getElementById("bullet-flow-rate").classList;
-                if (data.isRunning) {
+                if (data.count > 0) {
                     c.add('animate-pulse');
                 } else {
                     c.remove('animate-pulse');
                 }
                 document.getElementById("bullet-flow-rate").classList = c;
+
+                const now = moment();
+                const diffInMin = moment.duration(moment().diff(start)).asMinutes();
+                let remaining;
+                if (diffInMin < 10 || !start) {
+                    let litersStillToFill = data.targetLiters - data.litersFilled;
+                    litersStillToFill = litersStillToFill < 0 ? 0 : litersStillToFill;
+                    remaining = (litersStillToFill) / (data.flowRate === 0 ? 1 : data.flowRate);
+                } else {
+                    const averageFlowRate = data.litersFilled / diffInMin;
+                    remaining = 4 / averageFlowRate;
+                    remaining = remaining < 0 ? 0 : remaining;
+                }
+
+
+                if (data.count === 0 && data.targetLiters <= 0.1)
+                    document.getElementById("time-remaining").innerHTML = `Unknown`;
+                else
+                    document.getElementById("time-remaining").innerHTML = `&nbsp;${Number(remaining).toFixed()}&nbsp;min`;
+
             });
         } catch (error) {
             console.error(error);

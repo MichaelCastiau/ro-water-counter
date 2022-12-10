@@ -19,7 +19,7 @@ void DeviceModeRunning::initialise()
     lcd->print("System running");
     lcd->setCursor(1, 0);
 
-    WSMessage message = {.is_running = 1};
+    WSMessage message = {.startTime = 1L};   //passing 1 here will result in passing the time from the internet in the wifi task
     xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(50));
 
     uint64_t numberLitersTarget = ((uint64_t)litersTarget * 10) / 10;
