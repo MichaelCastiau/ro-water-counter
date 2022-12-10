@@ -7,7 +7,7 @@ typedef struct ws_message
     double litersFilled;
     uint count;
     double targetLiters;
-    uint8_t is_running;
+    unsigned long startTime;
 } WSMessage;
 
 #endif

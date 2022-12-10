@@ -4,6 +4,7 @@
 #include <HTTPClient.h>
 #include <DNSServer.h>
 #include <WiFiServer.h>
+#include <NTPClient.h>
 #include "../assets/portal.hpp"
 #include "../config.h"
 #include "../models/WSMessage.h"
@@ -31,6 +32,8 @@ void StartWiFiTask(void *args)
     AsyncWebServer server(80);
     AsyncWebSocket ws("/ws");
     DNSServer dns;
+    WiFiUDP ntpUDP;
+    NTPClient timeClient(ntpUDP);
 
     WiFi.mode(WIFI_MODE_APSTA);
     WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE, INADDR_NONE);
@@ -60,6 +63,9 @@ void StartWiFiTask(void *args)
     Serial.print("AP IP address: ");
     Serial.println(IP);
 
+    timeClient.begin();
+    //timeClient.setTimeOffset(3600);
+
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(200, "text/html", htmlPortal); });
 
@@ -69,7 +75,7 @@ void StartWiFiTask(void *args)
     server.begin();
     Serial.println("HTTP server started");
 
-    volatile WSMessage message = {.flowRate = 0, .litersFilled = 0, .count = 0, .targetLiters = 0, .is_running = 0};
+    volatile WSMessage message = {.flowRate = 0, .litersFilled = 0, .count = 0, .targetLiters = 0};
 
     for (;;)
     {
@@ -96,13 +102,22 @@ void StartWiFiTask(void *args)
             if (newMessage.targetLiters > 0)
                 message.targetLiters = newMessage.targetLiters;
 
+            if (newMessage.startTime > 0)
+                message.startTime = timeClient.getEpochTime();
+
             message.flowRate = newMessage.flowRate;
             message.litersFilled = newMessage.litersFilled;
             message.count = newMessage.count;
 
             char buffer[150];
-            sprintf(buffer, "{\"flowRate\":%f,\"litersFilled\":%f, \"count\": %i, \"targetLiters\":%f, \"isRunning\":%i}", message.flowRate, message.litersFilled, message.count, message.targetLiters);
+            sprintf(buffer, "{\"flowRate\":%f,\"litersFilled\":%f, \"count\": %i, \"targetLiters\":%f,\"startTime\":%li}", message.flowRate, message.litersFilled, message.count, message.targetLiters, message.startTime);
             ws.textAll(buffer);
+        }
+
+        ws.cleanupClients();
+
+        if(!timeClient.update()){
+            timeClient.forceUpdate();
         }
 
         dns.processNextRequest();
