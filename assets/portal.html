@@ -114,7 +114,7 @@
                 const now = moment();
                 const diffInMin = moment.duration(moment().diff(start)).asMinutes();
                 let remaining;
-                if (diffInMin < 10 || !start) {
+                if (!start || diffInMin < 1) {
                     let litersStillToFill = data.targetLiters - data.litersFilled;
                     litersStillToFill = litersStillToFill < 0 ? 0 : litersStillToFill;
                     remaining = (litersStillToFill) / (data.flowRate === 0 ? 1 : data.flowRate);
@@ -128,7 +128,7 @@
                 if (data.count === 0 && data.targetLiters <= 0.1)
                     document.getElementById("time-remaining").innerHTML = `&nbsp;Unknown`;
                 else
-                    document.getElementById("time-remaining").innerHTML = `&nbsp;${Number(remaining).toFixed()}&nbsp;min`;
+                    document.getElementById("time-remaining").innerHTML = `&nbsp;${isFinite(remaining) ? Number(remaining).toFixed() +'&nbsp;min' : 'Unknown'}`;
 
             });
         } catch (error) {
