@@ -1,8 +1,11 @@
 # RO Water Counter
+<img alt="Screenshot 2022-12-10 at 11 30 11" src="https://user-images.githubusercontent.com/10990692/206850769-03a02047-d70c-4bf7-80f0-054f305e1426.png"> 
 
 This repository contains the source code and hardware schematics for a Reverse Osmosis water counter device, based on an ESP32 module. The device allows for setting an amount of needed liters of water an will swich on/off the RO system automatically. When the amount of liters needed has been reached, the ESP32 module is programmed to interact with a webhook to send a notification to your smartphone.
 
-It interfaces with a high-precision water flow sensor type YF-S401. The sensor has a K-factor of 98. (In the code the K-factor is halved since we only have an interrupt on one edge).
+It interfaces with a high-precision water flow sensor with a K-factor of 20.
+
+<img height=500 src="https://user-images.githubusercontent.com/10990692/206850772-1a3cd72d-baa5-4b9a-8313-d5b7e3b0403e.PNG">
 
 ## Flashing
 
