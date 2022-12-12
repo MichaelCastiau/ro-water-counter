@@ -19,7 +19,7 @@ void DeviceModeRunning::initialise()
     lcd->print("System running");
     lcd->setCursor(1, 0);
 
-    WSMessage message = {.startTime = 1L};   //passing 1 here will result in passing the time from the internet in the wifi task
+    WSMessage message = {.startTime = 1L}; // passing 1 here will result in passing the time from the internet in the wifi task
     xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(50));
 
     uint64_t numberLitersTarget = ((uint64_t)litersTarget * 10) / 10;
@@ -84,6 +84,9 @@ void DeviceModeRunning::pressed(void)
     }
     else
     {
+        WSMessage message = {.targetLiters = this->litersTarget};
+        xQueueSend(toWSQueue, (void *)&message, pdMS_TO_TICKS(50));
+
         digitalWrite(PIN_RELAY_OUT, HIGH);
         lcd->print("System running  ");
         xEventGroupClearBits(ledEventGroup, 0xff);
@@ -101,7 +104,7 @@ void DeviceModeRunning::setLiters(double liters)
     lcd->print(".");
     lcd->print(decimals, DEC);
 
-    if (liters >= this->litersTarget)
+    if (liters >= this->litersTarget && this->litersTarget > 0)
     {
         // We're done :)
         (*this->onDoneCallback)(this->litersCount);

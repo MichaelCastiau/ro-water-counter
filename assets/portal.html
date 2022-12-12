@@ -113,22 +113,23 @@
 
                 const now = moment();
                 const diffInMin = moment.duration(moment().diff(start)).asMinutes();
+                let litersStillToFill = data.targetLiters - data.litersFilled;
+                litersStillToFill = litersStillToFill < 0 ? 0 : litersStillToFill;
                 let remaining;
                 if (!start || diffInMin < 1) {
-                    let litersStillToFill = data.targetLiters - data.litersFilled;
-                    litersStillToFill = litersStillToFill < 0 ? 0 : litersStillToFill;
                     remaining = (litersStillToFill) / (data.flowRate === 0 ? 1 : data.flowRate);
                 } else {
                     const averageFlowRate = data.litersFilled / diffInMin;
-                    remaining = 4 / averageFlowRate;
-                    remaining = remaining < 0 ? 0 : remaining;
+                    remaining = litersStillToFill / (averageFlowRate === 0 ? 1 : averageFlowRate);
                 }
+
+                remaining = remaining < 0 ? 0 : remaining;
 
 
                 if (data.count === 0 && data.targetLiters <= 0.1)
                     document.getElementById("time-remaining").innerHTML = `&nbsp;Unknown`;
                 else
-                    document.getElementById("time-remaining").innerHTML = `&nbsp;${isFinite(remaining) ? Number(remaining).toFixed() +'&nbsp;min' : 'Unknown'}`;
+                    document.getElementById("time-remaining").innerHTML = `&nbsp;${isFinite(remaining) ? Number(remaining).toFixed() + '&nbsp;min' : 'Unknown'}`;
 
             });
         } catch (error) {
